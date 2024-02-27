@@ -10,7 +10,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI usersMicroserviceOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Base API Templete")
+                .info(new Info().title("Base API")
                         .description("Base API swagger dependency")
                         .version("1.0"));
     }

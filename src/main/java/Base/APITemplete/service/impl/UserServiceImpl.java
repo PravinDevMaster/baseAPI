@@ -4,7 +4,9 @@ import Base.APITemplete.model.User;
 import Base.APITemplete.repository.UserRepository;
 import Base.APITemplete.service.UserService;
 import Base.APITemplete.util.DateUtil;
+import Base.APITemplete.util.EncryptionUtil;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,10 @@ public class UserServiceImpl implements UserService {
         } else {
             // Add the user if the loginId is unique
             user.setCreatedDate(DateUtil.getCurrentSqlDate());
-            return userRepository.save(user);
+            user.setPassword(EncryptionUtil.encrypt(user.getPassword()));
+            User saveUser = userRepository.save(user);
+            saveUser.setPassword(EncryptionUtil.decrypt(saveUser.getPassword()));
+            return saveUser;
         }
 
     }
@@ -44,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public User putUser(User user, Long id) {
         User existingUser = userRepository.getById(id);
         existingUser.setLoginId(user.getLoginId());
-        existingUser.setPassword(user.getPassword());
+        existingUser.setPassword(existingUser.getPassword());
         existingUser.setModifiedDate(DateUtil.getCurrentSqlDate());
         return userRepository.save(existingUser);
     }
@@ -57,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User validateUser(String loginId, String password) {
         User user = userRepository.findByLoginId(loginId);
-        if(user != null && user.getPassword().equals(password)){
+        if(user != null && EncryptionUtil.decrypt(user.getPassword()).equals(EncryptionUtil.decrypt(password))){
             return user; //Valid credential
         } else {
             return null; //Invalid credential
@@ -68,12 +73,13 @@ public class UserServiceImpl implements UserService {
     public User changePassword(String loginId, String password) {
         User existingUser = userRepository.findByLoginId(loginId);
         if (existingUser != null) {
-            existingUser.setPassword(password);
+            existingUser.setPassword(EncryptionUtil.encrypt(password));
             existingUser.setModifiedDate(DateUtil.getCurrentSqlDate());
             return userRepository.save(existingUser);
         } else  {
             return null;
         }
     }
+
 
 }
