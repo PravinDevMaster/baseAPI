@@ -1,6 +1,6 @@
 package Base.APITemplete.util;
 
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ApiResponseUtil {
@@ -9,7 +9,7 @@ public class ApiResponseUtil {
     public static <T> ResponseEntity<?> buildApiResponse(String status, int code, String message, T data) {
         // Inside this method, T represents a type that will be determined at runtime
         // Create an instance of ApiResponse with the specified type T
-        return new ResponseEntity<>(new ApiResponse<>(status, code, message, data), HttpStatusCode.valueOf(code));
+        return new ResponseEntity<>(new ApiResponse<>(status, code, message, data), HttpStatus.valueOf(code));
     }
 
     // Generic response structure for an item
